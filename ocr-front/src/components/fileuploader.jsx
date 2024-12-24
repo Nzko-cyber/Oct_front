@@ -1,6 +1,6 @@
 import React from "react";
 import { useDropzone } from "react-dropzone";
-import { Box, Typography, Chip } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 const FileUploader = ({ onFileUpload }) => {
   const { getRootProps, getInputProps } = useDropzone({

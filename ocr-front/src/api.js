@@ -1,21 +1,40 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:5000"; // URL вашего API
+const API_BASE_URL = "http://localhost:5000"; // Ваш базовый URL API
 
-export const classifyDocument = (filePath) =>
-  axios.post(`${API_BASE_URL}/classify`, { file_path: filePath });
+export const classifyDocument = (formData) =>
+  axios.post(`${API_BASE_URL}/classify`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  
+  export const performOCR = (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+  
+    return axios.post(`${API_BASE_URL}/ocr`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  };
+  
+  
+  
 
-export const performOCR = (filePath) =>
-  axios.post(`${API_BASE_URL}/ocr`, { file_path: filePath });
+export const spellCheck = (formData) =>
+  axios.post(`${API_BASE_URL}/spellcheck`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
 
-export const spellCheck = (ocrResultsDir) =>
-  axios.post(`${API_BASE_URL}/spellcheck`, { ocr_results_dir: ocrResultsDir });
+export const extractTables = (formData) =>
+  axios.post(`${API_BASE_URL}/extract_tables`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
 
-export const extractTables = (filePath) =>
-  axios.post(`${API_BASE_URL}/extract_tables`, { file_path: filePath });
+export const analyzeHeadings = (formData) =>
+  axios.post(`${API_BASE_URL}/analyze_headings`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
 
-export const analyzeHeadings = (filePath) =>
-  axios.post(`${API_BASE_URL}/analyze_headings`, { file_path: filePath });
-
-export const extractKeyData = (ocrResultsDir) =>
-  axios.post(`${API_BASE_URL}/extract`, { ocr_results_dir: ocrResultsDir });
+export const extractKeyData = (formData) =>
+  axios.post(`${API_BASE_URL}/extract`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });

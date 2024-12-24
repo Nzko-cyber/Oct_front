@@ -21,60 +21,81 @@ const App = () => {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const handleFileUpload = (files) => setFile(files[0]);
+  const handleFileUpload = (files) => {
+    setFile(files[0]);
+    setResult(null); // Reset result when a new file is uploaded
+  };
 
   const handleTaskChange = (selectedTask) => setTask(selectedTask);
 
   const handleSubmit = async () => {
-    if (!file || !task) {
-      alert("Please upload a file and select a task!");
+    if (!file) {
+      alert("Please upload a file!");
       return;
     }
-
+    if (!task) {
+      alert("Please select a task!");
+      return;
+    }
+  
+    console.log("Selected file:", file); // Добавлено для отладки
+    console.log("Selected task:", task); // Добавлено для отладки
+  
     setLoading(true);
     try {
-      const filePath = `/uploads/${file.name}`;
+      const formData = new FormData();
+      formData.append("file", file);
+  
+      console.log("FormData before sending:", formData); // Добавлено для отладки
+  
       let response;
-
       switch (task) {
         case "classify":
-          response = await classifyDocument(filePath);
+          response = await classifyDocument(formData);
           break;
         case "ocr":
-          response = await performOCR(filePath);
+          response = await performOCR(file); // Передача файла в performOCR
           break;
         case "spellcheck":
-          response = await spellCheck(filePath);
+          response = await spellCheck(formData);
           break;
         case "extract_tables":
-          response = await extractTables(filePath);
+          response = await extractTables(formData);
           break;
         case "analyze_headings":
-          response = await analyzeHeadings(filePath);
+          response = await analyzeHeadings(formData);
           break;
         case "extract":
-          response = await extractKeyData(filePath);
+          response = await extractKeyData(formData);
           break;
         default:
           throw new Error("Unknown task selected");
       }
-
+  
+      console.log("Response from backend:", response.data); // Добавлено для отладки
       setResult(response.data);
+  
       setHistory((prevHistory) => [
         ...prevHistory,
-        { file: file.name, task, date: new Date().toLocaleString(), result: response.data },
+        {
+          file: file.name,
+          task,
+          date: new Date().toLocaleString(),
+          result: response.data,
+        },
       ]);
     } catch (error) {
-      alert("Error processing request. Please try again.");
+      console.error("Error during task processing:", error);
+      alert("An error occurred while processing your request.");
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <div>
       <Header />
-  
       <TaskSelector selectedTask={task} onTaskChange={handleTaskChange} />
       <FileUploader onFileUpload={handleFileUpload} />
       <SubmitButton onSubmit={handleSubmit} loading={loading} />
